@@ -353,19 +353,65 @@
       display: flex; align-items: flex-start; gap: 1rem;
       padding: 1.375rem 1.25rem; background: white;
       border-radius: 14px; border: 1px solid var(--gray-200);
-      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: box-shadow 0.3s ease, border-color 0.3s ease;
+      /* 3D tilt — transform applied via JS */
+      transform-style: preserve-3d;
+      will-change: transform;
     }
     .belief-item:hover {
       border-color: var(--blue-400);
-      box-shadow: 0 4px 24px rgba(37,99,235,0.1);
-      transform: translateX(6px);
+      box-shadow: 0 12px 36px rgba(37,99,235,0.13);
     }
-    .belief-icon { font-size: 1.625rem; flex-shrink: 0; margin-top: 0.0625rem; }
+    .belief-icon { font-size: 1.625rem; flex-shrink: 0; margin-top: 0.0625rem; transform: translateZ(18px); }
     .belief-item h4 { font-size: 0.9375rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.3rem; }
     .belief-item p { font-size: 0.875rem; color: var(--gray-500); line-height: 1.55; }
 
     /* ── SKILLS ── */
-    #skills { background: white; }
+    #skills { background: white; position: relative; overflow: hidden; }
+
+    /* Morphing blobs behind skills */
+    .skills-blob {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; filter: blur(70px); opacity: 0.07;
+    }
+    .skills-blob-1 {
+      width: 500px; height: 500px;
+      background: linear-gradient(135deg, #1e40af, #7c3aed);
+      top: -100px; left: -120px;
+      animation: skillBlob1 10s ease-in-out infinite alternate;
+    }
+    .skills-blob-2 {
+      width: 400px; height: 400px;
+      background: linear-gradient(135deg, #7c3aed, #2563eb);
+      bottom: -80px; right: -80px;
+      animation: skillBlob2 13s ease-in-out infinite alternate;
+    }
+    .skills-blob-3 {
+      width: 300px; height: 300px;
+      background: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      animation: skillBlob3 9s ease-in-out infinite alternate;
+      opacity: 0.05;
+    }
+    @keyframes skillBlob1 {
+      0%   { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; transform: translate(0,0) scale(1); }
+      33%  { border-radius: 30% 60% 70% 40% / 50% 60% 30% 60%; transform: translate(30px,20px) scale(1.05); }
+      66%  { border-radius: 50% 40% 60% 30% / 40% 70% 30% 60%; transform: translate(-20px,40px) scale(0.97); }
+      100% { border-radius: 40% 70% 30% 60% / 60% 40% 70% 30%; transform: translate(10px,-20px) scale(1.03); }
+    }
+    @keyframes skillBlob2 {
+      0%   { border-radius: 40% 60% 60% 40% / 60% 30% 70% 40%; transform: translate(0,0) scale(1); }
+      40%  { border-radius: 70% 30% 40% 60% / 40% 70% 30% 60%; transform: translate(-40px,-30px) scale(1.08); }
+      80%  { border-radius: 30% 60% 50% 50% / 70% 40% 60% 30%; transform: translate(20px,-10px) scale(0.94); }
+      100% { border-radius: 50% 50% 40% 60% / 30% 60% 40% 70%; transform: translate(-10px,20px) scale(1.04); }
+    }
+    @keyframes skillBlob3 {
+      0%   { border-radius: 50% 50% 30% 70% / 50% 70% 30% 50%; transform: translate(-50%,-50%) scale(1); }
+      50%  { border-radius: 70% 30% 60% 40% / 30% 50% 70% 40%; transform: translate(-45%,-55%) scale(1.15); }
+      100% { border-radius: 30% 70% 50% 50% / 60% 30% 60% 40%; transform: translate(-50%,-48%) scale(0.92); }
+    }
+
     .skills-grid {
       display: grid; grid-template-columns: repeat(3, 1fr);
       gap: 1.5rem; margin-top: 3.25rem;
@@ -496,6 +542,15 @@
       background: radial-gradient(circle, #6d28d9, transparent 70%);
       bottom: -100px; right: -80px; pointer-events: none;
     }
+    /* Spotlight beam — shared by hero + contact */
+    .spotlight-beam {
+      position: absolute;
+      width: 600px; height: 600px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(96,165,250,0.10) 0%, transparent 70%);
+      pointer-events: none; transform: translate(-50%, -50%);
+      transition: opacity 0.4s ease; opacity: 0;
+      z-index: 0;
+    }
     .contact-inner { max-width: 1120px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
     #contact .section-label { color: var(--blue-400); }
     #contact .section-title { color: white; }
@@ -586,6 +641,7 @@
   <!-- ── HERO ── -->
   <section id="hero">
     <canvas id="hero-canvas"></canvas>
+    <div class="spotlight-beam" id="hero-spotlight"></div>
     <div class="orb orb-1"></div>
     <div class="orb orb-2"></div>
     <div class="orb orb-3"></div>
@@ -711,6 +767,9 @@
 
   <!-- ── SKILLS ── -->
   <section id="skills">
+    <div class="skills-blob skills-blob-1"></div>
+    <div class="skills-blob skills-blob-2"></div>
+    <div class="skills-blob skills-blob-3"></div>
     <div class="section-inner">
       <span class="section-label fade-in">Skills &amp; Expertise</span>
       <h2 class="section-title fade-in">What I bring <span class="gradient-text">to the table</span></h2>
@@ -856,6 +915,7 @@
   <section id="contact">
     <div class="contact-orb-1"></div>
     <div class="contact-orb-2"></div>
+    <div class="spotlight-beam" id="contact-spotlight"></div>
     <div class="contact-inner">
       <span class="section-label fade-in">Let's Connect</span>
       <h2 class="section-title fade-in">Want to work <span class="gradient-text">together?</span></h2>
@@ -1081,6 +1141,55 @@
       card.addEventListener('mouseenter', () => {
         card.style.transition = 'transform 0.1s ease, box-shadow 0.3s ease, border-color 0.3s ease';
       });
+    });
+
+    // ── BELIEF CARD 3D TILT (About Me) ───────────────
+    document.querySelectorAll('.belief-item').forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.style.transition = 'transform 0.1s ease, box-shadow 0.3s ease, border-color 0.3s ease';
+      });
+      card.addEventListener('mousemove', (e) => {
+        const rect = card.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const cx = rect.width / 2;
+        const cy = rect.height / 2;
+        const rotateX = ((y - cy) / cy) * -5;
+        const rotateY = ((x - cx) / cx) * 7;
+        card.style.transform = `perspective(900px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateZ(6px)`;
+      });
+      card.addEventListener('mouseleave', () => {
+        card.style.transition = 'transform 0.6s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.3s ease, border-color 0.3s ease';
+        card.style.transform = 'perspective(900px) rotateX(0deg) rotateY(0deg) translateZ(0px)';
+      });
+    });
+
+    // ── SPOTLIGHT — HERO ─────────────────────────────
+    const heroSection = document.getElementById('hero');
+    const heroSpotlight = document.getElementById('hero-spotlight');
+
+    heroSection.addEventListener('mousemove', (e) => {
+      const rect = heroSection.getBoundingClientRect();
+      heroSpotlight.style.left = (e.clientX - rect.left) + 'px';
+      heroSpotlight.style.top  = (e.clientY - rect.top)  + 'px';
+      heroSpotlight.style.opacity = '1';
+    });
+    heroSection.addEventListener('mouseleave', () => {
+      heroSpotlight.style.opacity = '0';
+    });
+
+    // ── SPOTLIGHT — CONTACT ──────────────────────────
+    const contactSection = document.getElementById('contact');
+    const contactSpotlight = document.getElementById('contact-spotlight');
+
+    contactSection.addEventListener('mousemove', (e) => {
+      const rect = contactSection.getBoundingClientRect();
+      contactSpotlight.style.left = (e.clientX - rect.left) + 'px';
+      contactSpotlight.style.top  = (e.clientY - rect.top)  + 'px';
+      contactSpotlight.style.opacity = '1';
+    });
+    contactSection.addEventListener('mouseleave', () => {
+      contactSpotlight.style.opacity = '0';
     });
   </script>
 </body>
