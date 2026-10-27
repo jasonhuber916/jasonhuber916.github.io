@@ -614,6 +614,7 @@
       z-index: 0;
     }
     .contact-inner { max-width: 1120px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
+    .constellation-watermark { position: absolute; top: 24px; right: 32px; width: 260px; opacity: 0.55; pointer-events: none; z-index: 0; }
     #contact .section-label { color: var(--blue-400); }
     #contact .section-title { color: white; }
     #contact .section-subtitle { color: rgba(255,255,255,0.6); margin: 0 auto 3.25rem; }
@@ -982,6 +983,30 @@
     <div class="contact-orb-1"></div>
     <div class="contact-orb-2"></div>
     <div class="spotlight-beam" id="contact-spotlight"></div>
+    <!-- Little Dipper constellation watermark — Polaris is the North Star -->
+    <svg class="constellation-watermark" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <!-- Lines: handle Polaris→δ→ε→ζ, bowl ζ→η→γ→β→ζ -->
+      <g stroke="rgba(255,255,255,0.22)" stroke-width="1" fill="none">
+        <line x1="340" y1="28"  x2="308" y2="68"/>
+        <line x1="308" y1="68"  x2="274" y2="110"/>
+        <line x1="274" y1="110" x2="252" y2="152"/>
+        <line x1="252" y1="152" x2="210" y2="128"/>
+        <line x1="210" y1="128" x2="214" y2="182"/>
+        <line x1="214" y1="182" x2="258" y2="196"/>
+        <line x1="258" y1="196" x2="252" y2="152"/>
+      </g>
+      <!-- Stars -->
+      <circle cx="308" cy="68"  r="2.5" fill="rgba(200,216,255,0.7)"/>
+      <circle cx="274" cy="110" r="2.2" fill="rgba(200,216,255,0.7)"/>
+      <circle cx="252" cy="152" r="2.5" fill="rgba(200,216,255,0.7)"/>
+      <circle cx="210" cy="128" r="2.3" fill="rgba(200,216,255,0.7)"/>
+      <circle cx="214" cy="182" r="2.6" fill="rgba(200,216,255,0.7)"/>
+      <circle cx="258" cy="196" r="2.8" fill="rgba(200,216,255,0.7)"/>
+      <!-- Polaris — North Star, slightly brighter with glow -->
+      <circle cx="340" cy="28" r="18" fill="rgba(210,228,255,0.07)"/>
+      <circle cx="340" cy="28" r="9"  fill="rgba(210,228,255,0.12)"/>
+      <circle cx="340" cy="28" r="4"  fill="rgba(255,255,255,0.9)"/>
+    </svg>
     <div class="contact-inner">
       <span class="section-label fade-in">Let's Connect</span>
       <h2 class="section-title fade-in">Want to work <span class="gradient-text">together?</span></h2>
@@ -1087,65 +1112,6 @@
     let particles = [];
     let animFrame;
 
-    // Little Dipper (Ursa Minor) — normalized positions (0–1) relative to canvas
-    // Placed in upper-right area, matching the LinkedIn banner
-    const DIPPER_STARS = [
-      { nx: 0.87, ny: 0.08, r: 3.5, isPolaris: true },  // α UMi — Polaris (North Star)
-      { nx: 0.81, ny: 0.16, r: 2.0 },                    // δ UMi
-      { nx: 0.75, ny: 0.24, r: 1.8 },                    // ε UMi
-      { nx: 0.71, ny: 0.32, r: 2.1 },                    // ζ UMi (handle meets bowl)
-      { nx: 0.61, ny: 0.27, r: 1.9 },                    // η UMi
-      { nx: 0.62, ny: 0.41, r: 2.2 },                    // γ UMi — Pherkad
-      { nx: 0.73, ny: 0.44, r: 2.4 },                    // β UMi — Kochab
-    ];
-    // Handle: Polaris → δ → ε → ζ  |  Bowl: ζ → η → γ → β → ζ
-    const DIPPER_LINES = [[0,1],[1,2],[2,3],[3,4],[4,5],[5,6],[6,3]];
-    let polarisGlow = 0, polarisGlowDir = 1;
-
-    function drawConstellation() {
-      const stars = DIPPER_STARS.map(s => ({ ...s, x: s.nx * canvas.width, y: s.ny * canvas.height }));
-
-      // Faint connecting lines
-      ctx.save();
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-      ctx.lineWidth = 0.8;
-      DIPPER_LINES.forEach(([a, b]) => {
-        ctx.beginPath();
-        ctx.moveTo(stars[a].x, stars[a].y);
-        ctx.lineTo(stars[b].x, stars[b].y);
-        ctx.stroke();
-      });
-      ctx.restore();
-
-      // Stars
-      stars.forEach(star => {
-        ctx.save();
-        if (star.isPolaris) {
-          // Outer glow
-          const glow = ctx.createRadialGradient(star.x, star.y, 0, star.x, star.y, star.r * 7);
-          glow.addColorStop(0, `rgba(210,225,255,${0.28 + polarisGlow * 0.14})`);
-          glow.addColorStop(1, 'rgba(210,225,255,0)');
-          ctx.fillStyle = glow;
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r * 7, 0, Math.PI * 2);
-          ctx.fill();
-          // Core
-          ctx.globalAlpha = 0.95;
-          ctx.fillStyle = '#ffffff';
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-          ctx.fill();
-        } else {
-          ctx.globalAlpha = 0.78;
-          ctx.fillStyle = '#c8d8ff';
-          ctx.beginPath();
-          ctx.arc(star.x, star.y, star.r, 0, Math.PI * 2);
-          ctx.fill();
-        }
-        ctx.restore();
-      });
-    }
-
     function resizeCanvas() {
       canvas.width = canvas.offsetWidth;
       canvas.height = canvas.offsetHeight;
@@ -1210,10 +1176,6 @@
 
     function animateParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      // Pulse Polaris glow
-      polarisGlow += 0.012 * polarisGlowDir;
-      if (polarisGlow > 1 || polarisGlow < 0) polarisGlowDir *= -1;
-      drawConstellation();
       drawConnections();
       particles.forEach(p => { p.update(); p.draw(); });
       animFrame = requestAnimationFrame(animateParticles);
