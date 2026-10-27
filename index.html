@@ -614,7 +614,6 @@
       z-index: 0;
     }
     .contact-inner { max-width: 1120px; margin: 0 auto; text-align: center; position: relative; z-index: 1; }
-    .constellation-watermark { position: absolute; top: 24px; right: 32px; width: 260px; opacity: 0.55; pointer-events: none; z-index: 0; }
     #contact .section-label { color: var(--blue-400); }
     #contact .section-title { color: white; }
     #contact .section-subtitle { color: rgba(255,255,255,0.6); margin: 0 auto 3.25rem; }
@@ -983,30 +982,6 @@
     <div class="contact-orb-1"></div>
     <div class="contact-orb-2"></div>
     <div class="spotlight-beam" id="contact-spotlight"></div>
-    <!-- Little Dipper constellation watermark — Polaris is the North Star -->
-    <svg class="constellation-watermark" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-      <!-- Lines: handle Polaris→δ→ε→ζ, bowl ζ→η→γ→β→ζ -->
-      <g stroke="rgba(255,255,255,0.22)" stroke-width="1" fill="none">
-        <line x1="340" y1="28"  x2="308" y2="68"/>
-        <line x1="308" y1="68"  x2="274" y2="110"/>
-        <line x1="274" y1="110" x2="252" y2="152"/>
-        <line x1="252" y1="152" x2="210" y2="128"/>
-        <line x1="210" y1="128" x2="214" y2="182"/>
-        <line x1="214" y1="182" x2="258" y2="196"/>
-        <line x1="258" y1="196" x2="252" y2="152"/>
-      </g>
-      <!-- Stars -->
-      <circle cx="308" cy="68"  r="2.5" fill="rgba(200,216,255,0.7)"/>
-      <circle cx="274" cy="110" r="2.2" fill="rgba(200,216,255,0.7)"/>
-      <circle cx="252" cy="152" r="2.5" fill="rgba(200,216,255,0.7)"/>
-      <circle cx="210" cy="128" r="2.3" fill="rgba(200,216,255,0.7)"/>
-      <circle cx="214" cy="182" r="2.6" fill="rgba(200,216,255,0.7)"/>
-      <circle cx="258" cy="196" r="2.8" fill="rgba(200,216,255,0.7)"/>
-      <!-- Polaris — North Star, slightly brighter with glow -->
-      <circle cx="340" cy="28" r="18" fill="rgba(210,228,255,0.07)"/>
-      <circle cx="340" cy="28" r="9"  fill="rgba(210,228,255,0.12)"/>
-      <circle cx="340" cy="28" r="4"  fill="rgba(255,255,255,0.9)"/>
-    </svg>
     <div class="contact-inner">
       <span class="section-label fade-in">Let's Connect</span>
       <h2 class="section-title fade-in">Want to work <span class="gradient-text">together?</span></h2>
